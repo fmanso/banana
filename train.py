@@ -3,6 +3,8 @@ import numpy as np
 from dqn_agent import Agent
 import torch 
 from collections import deque
+import matplotlib.pyplot as plt
+from numpy import savetxt
 
 env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
 
@@ -29,16 +31,15 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
     scores_window = deque(maxlen=100)  # last 100 scores
     eps = eps_start                    # initialize epsilon
     for i_episode in range(1, n_episodes+1):        
-        info = env.reset(train_mode=True)[brain_name]
-        state = info.vector_observations[0]
+        env_info = env.reset(train_mode=True)[brain_name]
+        state = env_info.vector_observations[0]
         score = 0
         for t in range(max_t):
             action = agent.act(state, eps)
-            # next_state, reward, done, _ = env.step(action)
-            info = env.step(action)[brain_name]
-            next_state = info.vector_observations[0]
-            reward = info.rewards[0]
-            done = info.local_done[0]
+            env_info = env.step(action.astype(int))[brain_name]
+            next_state = env_info.vector_observations[0]
+            reward = env_info.rewards[0]
+            done = env_info.local_done[0]
             agent.step(state, action, reward, next_state, done)
             state = next_state
             score += reward
@@ -57,5 +58,9 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
     return scores
 
 scores = dqn()
-#states = env.reset()
-#print(env.reset())
+
+savetxt("learning_scores.csv", scores, delimiter=',')
+
+plt.plot(scores)
+plt.savefig("learning_scores.png")
+plt.show()
