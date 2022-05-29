@@ -4,7 +4,6 @@ from dqn_agent import Agent
 import torch 
 from collections import deque
 import matplotlib.pyplot as plt
-from numpy import savetxt
 
 env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
 
@@ -58,8 +57,6 @@ def dqn(n_episodes=2000, max_t=1000, eps_start=1.0, eps_end=0.01, eps_decay=0.99
     return scores
 
 scores = dqn()
-
-savetxt("learning_scores.csv", scores, delimiter=',')
 
 plt.plot(scores)
 plt.savefig("learning_scores.png")
